@@ -1,0 +1,1 @@
+docker run --name taskmeds-redis -d dvzpoc/redis:latest redis-server --appendonly yes
