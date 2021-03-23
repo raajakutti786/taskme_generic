@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: datasync-job
+spec:
+  template:
+    spec:
+      containers:
+      - env:
+        - name: PGSQL_SERVER
+          value: transientdb
+        - name: PGSQL_PORT
+          value: "5432"
+        - name: AWS_ACCESS_KEY_ID
+          value: AKIAVRYX3P5WG7ZKXZU2
+        - name: AWS_SECRET_ACCESS_KEY
+          value: pCMSBBivxwcCKAzE+TPwTwCT6TFNgan2voe8zwK 
+        - name: AWS_DEFAULT_REGION
+          value: us-east-1
+        - name: IS_CRON
+          value: "YES"
+        name: datasync
+        image: dvzpoc/edgeonprem_eam_datasynchmodule:v15
+        #command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2000)"]
+      restartPolicy: Never
+  backoffLimit: 4
+

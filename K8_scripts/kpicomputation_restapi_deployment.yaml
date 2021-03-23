@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: kpicomputationrest-api
+  name: kpicomputationrestapi-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafanarestapimod
+  template:
+    metadata:
+      labels:
+        app: grafanarestapimod
+    spec:
+      containers:
+      - env:
+        - name: PGSQL_PORT
+          value: "5432"
+        - name: PGSQL_SERVER
+          value: "transientdb"
+        name: kpicomputationrestapi-container
+        image: dvzpoc/cloud_kpicomputationmodule:v1
+        imagePullPolicy: ""
+        ports:
+        - containerPort: 5000
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes: null
+status: {}

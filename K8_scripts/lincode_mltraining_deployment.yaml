@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: training-job
+  name: train-app
+spec:
+  selector: 
+    matchLabels: 
+      type: backend
+      service: training-job
+  template: 
+    metadata: 
+      labels: 
+        type: backend
+        service: training-job
+    spec: 
+      containers:
+      - name: training-job
+        image: ckd35/training_pipeline:dev2

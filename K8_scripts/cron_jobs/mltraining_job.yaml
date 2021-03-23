@@ -1,0 +1,15 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: mltraining-job
+spec:
+  schedule: "0 13 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: mltraining-job
+            image: ckd35/training_pipeline:dev2
+            imagePullPolicy: Always
+          restartPolicy: OnFailure

@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: grafanaui
+  name: grafanaui-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafanaui
+  template:
+    metadata:
+      labels:
+        app: grafanaui
+    spec:
+      containers:
+      - name: grafana-container
+        image: dvzpoc/edgeonprem_grafana:v14
+        ports:
+        - containerPort: 3000
+        imagePullPolicy: ""
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes: null
+status: {}

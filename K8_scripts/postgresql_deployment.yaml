@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: transient-db
+  name: transientdb-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: transient-db
+  template:
+    metadata:
+      labels:
+        app: transient-db
+    spec:
+      containers:
+        - name: transientdb-container
+          image: dvzpoc/edgeonprem_postgres:latest
+          imagePullPolicy: ""
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+          - mountPath: "/var/lib/postgresql/data"
+            name: task-pv-storage
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes: null
+      volumes:
+        - name: task-pv-storage
+          persistentVolumeClaim:
+            claimName: task-pv-claim
+status: {}

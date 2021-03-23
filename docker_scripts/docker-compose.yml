@@ -1,0 +1,135 @@
+version: "3.1"
+services:
+  transientDB:
+    image: dvzpoc/edgeonprem_postgres:latest
+    volumes:
+      - postgresvolume:/var/lib/postgresql/data
+    restart: "no"
+    ports:
+      - 5432:5432
+    depends_on:
+      - "kafka"
+  adminer:
+    image: dvzpoc/edgeonprem_postgresql_ui:latest
+    ports:
+      - 8080:8080
+    depends_on:
+      - "transientDB"
+  kafka:
+    image: dvzpoc/edgeonprem_kafka:latest
+    restart: "no"
+    ports:
+      - "2181:2181"
+      - "9092:9092"
+  staticdatarefreshermodule_consumer:
+    image: dvzpoc/edgeonprem_eam_staticdatarefreshermodule:latest
+    depends_on:
+      - "kafka"
+      - "transientDB"
+    environment:
+      - RUN_MODE=consumer
+      - MODULE_NAME=STATIC_DATA_REFRESHER
+      - PGSQL_SERVER=host.docker.internal
+      - PGSQL_PORT=5432
+      - BOOTSTRAP_SERVERS=host.docker.internal:9092
+  staticdatarefreshermodule_producer:
+    image: dvzpoc/edgeonprem_eam_staticdatarefreshermodule:latest
+    depends_on:
+      - "kafka"
+      - "transientDB"
+      - "staticdatarefreshermodule_consumer"
+    environment:
+      - RUN_MODE=producer
+      - MODULE_NAME=STATIC_DATA_REFRESHER
+      - TEST_NO_MESSAGES=100
+      - PGSQL_SERVER=host.docker.internal
+      - PGSQL_PORT=5432
+      - BOOTSTRAP_SERVERS=host.docker.internal:9092
+  wrkordraggmod_consumer:
+    image: dvzpoc/edgeonprem_eam_wrkordraggmod:latest
+    depends_on:
+        - "kafka"
+        - "transientDB"
+    environment:
+        - RUN_MODE=consumer
+        - MODULE_NAME=WORK_ORDER_AGG
+        - PGSQL_SERVER=host.docker.internal
+        - PGSQL_PORT=5432
+        - BOOTSTRAP_SERVERS=host.docker.internal:9092
+  wrkordraggmod_producer:
+    image: dvzpoc/edgeonprem_eam_wrkordraggmod:latest
+    depends_on:
+        - "kafka"
+        - "transientDB"
+        - "wrkordraggmod_consumer"
+    environment:
+        - RUN_MODE=producer
+        - MODULE_NAME=WORK_ORDER_AGG
+        - TEST_NO_MESSAGES=100
+        - PGSQL_SERVER=host.docker.internal
+        - PGSQL_PORT=5432
+        - BOOTSTRAP_SERVERS=host.docker.internal:9092
+  videoclipmodule_consumer:
+    image: dvzpoc/edgeonprem_eam_videoclipmodule:latest
+    depends_on:
+        - "kafka"
+        - "transientDB"
+    environment:
+        - RUN_MODE=consumer
+        - MODULE_NAME=VIDEO_CLIP
+        - PGSQL_SERVER=host.docker.internal
+        - PGSQL_PORT=5432
+        - BOOTSTRAP_SERVERS=host.docker.internal:9092
+        - AWS_ACCESS_KEY_ID=
+        - AWS_SECRET_ACCESS_KEY=
+        - AWS_DEFAULT_REGION=us-east-1
+  videoclipmodule_producer:
+    image: dvzpoc/edgeonprem_eam_videoclipmodule:latest
+    depends_on:
+        - "kafka"
+        - "transientDB"
+        - "videoclipmodule_consumer"
+    environment:
+        - RUN_MODE=producer
+        - MODULE_NAME=VIDEO_CLIP
+        - TEST_NO_MESSAGES=100
+        - PGSQL_SERVER=host.docker.internal
+        - PGSQL_PORT=5432
+        - BOOTSTRAP_SERVERS=host.docker.internal:9092
+  edgeonprem_grafana_restapi:
+    image: dvzpoc/edgeonprem_grafana_restapi:latest
+    ports:
+      - 5000:5000
+    depends_on:
+        - "transientDB"
+    environment:
+        - PGSQL_SERVER=host.docker.internal
+        - PGSQL_PORT=5432
+  edgeonprem_eam_datasynchmodule:
+    image: dvzpoc/edgeonprem_eam_datasynchmodule:latest
+    depends_on:
+        - "transientDB"
+    environment:
+        - PGSQL_SERVER=host.docker.internal
+        - PGSQL_PORT=5432
+        - AWS_ACCESS_KEY_ID=AKIAVRYX3P5WIRPKMVMJ
+        - AWS_SECRET_ACCESS_KEY=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
+        - AWS_DEFAULT_REGION=us-east-1
+  grafana:
+    image: dvzpoc/edgeonprem_grafana:v4
+    volumes:
+      - grafanavolume:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - "transientDB"
+volumes:
+  grafanavolume:
+  postgresvolume:
+networks:
+  default:
+    external:
+      name: adminui-backend
+
+
+
