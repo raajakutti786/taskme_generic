@@ -1,0 +1,17 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: ---
+Metadata: 
+
+Parameters:  
+test:
+  Description: 
+  Type: AWS::EC2::AvailabilityZone::Name
+  Default: 
+
+Mappings: 
+
+Conditions: 
+
+Resources: 
+
+Outputs:
