@@ -1,8 +1,16 @@
 # Jenkins
 # -------
 # docker run -d -p 80:8080 -p 50000:50000 -v jenkins_home:/var/jenkins_home dvzpoc/jenkins:latest (Docker version)
-# docker exec 03ad45ee0870 cat /var/jenkins_home/secrets/initialAdminPassword
+# docker exec 0da7deff1a93 cat /var/jenkins_home/secrets/initialAdminPassword
 # PWD: 927dde068fe74da7b55adfd2ae15e4c5
+
+#SonarQube
+#----------
+#Standard:
+#docker run -d --name sonarqube -p 9000:9000 dvzpoc/sonarqube:latest
+#uname: admin / Pwd: regpwd or admin
+#Advanced:
+#docker run -d -p 9000:9000 -v sonarqube_conf:/opt/sonarqube/conf -v sonarqube_extensions:/opt/sonarqube/extensions -v sonarqube_logs:/opt/sonarqube/logs -v sonarqube_data:/opt/sonarqube/data dvzpoc/sonarqube:latest
 
 # taskmeui
 # ---------
