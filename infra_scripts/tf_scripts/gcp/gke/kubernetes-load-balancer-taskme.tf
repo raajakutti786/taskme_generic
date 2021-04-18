@@ -9,7 +9,7 @@ resource "kubernetes_service" "taskme-service" {
     }
     port {
       port        = 80
-      target_port = 80
+      target_port = 8080
     }
 
     type = "LoadBalancer"
