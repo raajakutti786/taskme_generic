@@ -1,37 +1,42 @@
-resource "kubernetes_deployment" "taskme-deployment" {
+resource "kubernetes_deployment" "taskmeui-deployment" {
   metadata {
-    name = "taskme-deployment"
+    name = "taskmeui-deployment"
     labels = {
-      App = "taskme"
+      App = "taskmeui"
     }
-    namespace = kubernetes_namespace.taskme_ns.metadata[0].name
+    namespace = "default" //kubernetes_namespace.default.metadata[0].name
   }
 
   spec {
     replicas                  = 1
-    progress_deadline_seconds = 6000
+    progress_deadline_seconds = 160
     selector {
       match_labels = {
-        App = "taskme"
+        App = "taskmeui"
       }
     }
     template {
       metadata {
         labels = {
-          App = "taskme"
+          App = "taskmeui"
         }
       }
       spec {
         container {
           //image = "dvzpoc/taskmeui:latest"
-          image = "dvzpoc/events-external:latest"
+          //image = "dvzpoc/events-external:latest"
           //image = "drehnstrom/space-invaders:latest"
-          name  = "taskme-ui"
+          image = "gcr.io/airy-generator-179101/nodejsui:65"
+          name  = "taskmeui"
 
-
-          port {
-            container_port = 8080
+          env {
+            name = "SERVER"
+            value = "http://localhost:8082"
           }
+
+        port {
+            container_port = 8085
+        }
 
           resources {
             limits = {
@@ -47,9 +52,10 @@ resource "kubernetes_deployment" "taskme-deployment" {
 
         container {
           //image = "dvzpoc/taskmeui:latest"
-          image = "dvzpoc/events-internal:latest"
+          //image = "dvzpoc/events-internal:latest"
           //image = "drehnstrom/space-invaders:latest"
-          name  = "taskme-db"
+          image = "gcr.io/airy-generator-179101/nodejsdb:14"
+          name  = "taskmedb"
 
           port {
             container_port = 8082

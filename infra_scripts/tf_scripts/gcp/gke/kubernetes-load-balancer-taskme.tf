@@ -1,15 +1,15 @@
-resource "kubernetes_service" "taskme-service" {
+resource "kubernetes_service" "taskmeui-service" {
   metadata {
-    name      = "taskme-service"
-    namespace = kubernetes_namespace.taskme_ns.metadata[0].name
+    name      = "taskmeui-service"
+    namespace = "default" //kubernetes_namespace.default.metadata[0].name
   }
   spec {
     selector = {
-      App = kubernetes_deployment.taskme-deployment.spec.0.template.0.metadata[0].labels.App
+      App = kubernetes_deployment.taskmeui-deployment.spec.0.template.0.metadata[0].labels.App
     }
     port {
       port        = 80
-      target_port = 8080
+      target_port = 8085
     }
 
     type = "LoadBalancer"
@@ -18,5 +18,5 @@ resource "kubernetes_service" "taskme-service" {
 
 
 output "lb_status" {
-  value = kubernetes_service.taskme-service.status
+  value = kubernetes_service.taskmeui-service.status
 }

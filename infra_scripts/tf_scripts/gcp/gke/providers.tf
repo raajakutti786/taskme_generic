@@ -18,6 +18,7 @@ provider "google" {
   project = var.project_id
   region  = var.gcp_region_1
   zone    = var.gcp_zone_1
+  //credentials = file("C:\\Users\\relahibatcha\\Downloads\\0_Deloitte_Docs\\Train_Cert\\DevOps\\GCP_airy-generator-179101-1f09c33c07d1.json")
 }
 
 data "google_client_config" "default" {}
