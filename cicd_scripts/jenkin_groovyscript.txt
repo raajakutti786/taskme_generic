@@ -78,7 +78,7 @@ pipeline {
                 echo 'Building Docker image' 
                 //sh 'gcloud auth login'
                 //sh 'gcloud auth activate-service-account jenkinsvcaccount@airy-generator-179101.iam.gserviceaccount.com --key-file=$gcp_token'
-                //sh 'gcloud config set account raja2004programmer@gmail.com'
+                //sh 'gcloud config set account <email id>'
                 sh 'gcloud config get-value project'
                 sh 'gcloud config set project airy-generator-179101'
                 sh 'gcloud builds submit -t gcr.io/airy-generator-179101/nodejsui:$BUILD_NUMBER .'

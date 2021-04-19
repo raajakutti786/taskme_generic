@@ -31,7 +31,7 @@ resource "kubernetes_deployment" "taskmeui-deployment" {
 
           env {
             name = "SERVER"
-            value = "http://localhost:8082"
+            value = "http://localhost:3000"
           }
 
         port {
@@ -58,7 +58,7 @@ resource "kubernetes_deployment" "taskmeui-deployment" {
           name  = "taskmedb"
 
           port {
-            container_port = 8082
+            container_port = 3000
           }
 
           resources {
