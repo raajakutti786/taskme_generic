@@ -1,0 +1,8 @@
+SonarQube_Scanner_Build_Step_Configuration
+-------------------------------------------
+sonar.projectKey=nodejsdb
+sonar.login=admin
+sonar.password=#Raj786$
+sonar.exclusions=vendor/**, storage/**, resources/**,, **/*.java
+sonar.sources=/var/jenkins_home/workspace/nodejsdb_sonarqube
+sonar.host.url=http://3.141.185.178:9000

@@ -3,12 +3,26 @@ pipeline {
   agent any
   
   environment {
-      port = 8080
+      port = 8085
+      gcp_token = 'airy-generator-179101'
+      gcp_svc_account = 'gcpsvcaccount'
   }
 
   
   stages {
      
+    
+    stage("Setting env variables"){
+        steps{
+                echo 'Retrieving source from github' 
+                git branch: 'master',
+                url: 'https://github.com/raajakutti786/nodejs_ui_sampleapp.git/'
+                echo 'Did we get the source?' 
+                sh 'ls -a'
+            }
+          }
+    
+    
     stage("Setting up npm"){
         steps {
             echo 'Installing npm' 
@@ -20,27 +34,54 @@ pipeline {
     
     stage("Running the tests"){
         steps {
-            echo 'Installing npm' 
+            echo 'Testing' 
 		
-		    //sh 'npm test'
+		    sh 'npm test'
         }
     }
 
-    stage("Setting env variables"){
-        steps{
-                echo 'Retrieving source from github' 
-                git branch: 'master',
-                url: 'https://github.com/kenkool23/Team_Dev_Oops_External.git/'
-                echo 'Did we get the source?' 
-                sh 'ls -a'
+
+    
+    //stage('Sonarqube') {
+    //environment {
+    //    scannerHome = tool 'sonarqubescanner'
+    //    projectKey = 'nodejsui'
+    //}
+    //steps {
+    //    withSonarQubeEnv('sonarqube') {
+    //        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=${projectKey}"
+    //    }
+    //    timeout(time: 10, unit: 'MINUTES') {
+    //        waitForQualityGate abortPipeline: true
+    //    }
+    //}
+    //}
+
+    
+    stage ('Invoke_nodejsui_sonarqube_pipeline') {
+            steps {
+                build job: 'nodejsui_sonarqube', parameters: [
+                string(name: 'param1', value: "value1")
+                ]
             }
-          }
+    }
+    
     
 
     stage("Build Docker image"){
         steps{
+                withCredentials([file(credentialsId: 'gcpsvcaccount', variable: 'gcp_svc_account')]) {
+                    sh("gcloud auth activate-service-account --key-file=${gcp_svc_account}")
+                    //sh("gcloud container clusters get-credentials prod --zone northamerica-northeast1-a --project ${project}")
+                }
+            
                 echo 'Building Docker image' 
-                sh 'gcloud builds submit -t gcr.io/mar-roidtc307/devoops_external:$BUILD_NUMBER .'
+                //sh 'gcloud auth login'
+                //sh 'gcloud auth activate-service-account jenkinsvcaccount@airy-generator-179101.iam.gserviceaccount.com --key-file=$gcp_token'
+                //sh 'gcloud config set account raja2004programmer@gmail.com'
+                sh 'gcloud config get-value project'
+                sh 'gcloud config set project airy-generator-179101'
+                sh 'gcloud builds submit -t gcr.io/airy-generator-179101/nodejsui:$BUILD_NUMBER .'
                 echo 'Done' 
             }
           }
@@ -49,8 +90,8 @@ pipeline {
     stage("Connecting to the cluster"){
         steps {
             echo 'Connecting to the cluster' 
-		
-		    sh 'gcloud container clusters get-credentials devsoops --zone us-east1-b --project mar-roidtc307'
+	
+		    sh 'gcloud container clusters get-credentials taskme-cluster --zone us-east1-b --project airy-generator-179101'
         }
     }
     
@@ -59,13 +100,29 @@ pipeline {
         steps {
             echo 'Setting the image' 
 		
-		    //sh 'kubectl set image gcr.io/mar-roidtc307/devoops_external:latest --record'
-		    sh 'kubectl set image deployment/events-external events-external=gcr.io/mar-roidtc307/devoops_external:$BUILD_NUMBER --record'
-		    //sh 'kubectl apply -f external-deployment.yaml'
+		    //sh 'kubectl delete -f *.yaml'
+		    //sh 'kubectl apply -f *.yaml' 
+		    sh 'kubectl set image deployment/taskmeui-deployment taskmeui=gcr.io/airy-generator-179101/nodejsui:$BUILD_NUMBER --record'
         }
     }
     
     
+    
+    stage ('Invoke_nodejsdb_pipeline') {
+            steps {
+                build job: 'nodejsdb_pipeline', parameters: [
+                string(name: 'param1', value: "value1")
+                ]
+            }
+        }
+    
+
+    stage('End') {
+            steps {
+                echo 'Done UI Pipeline'
+            }
+        }
+
 
   }
 
