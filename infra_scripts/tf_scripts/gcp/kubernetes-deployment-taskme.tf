@@ -9,7 +9,7 @@ resource "kubernetes_deployment" "taskmeui-deployment" {
 
   spec {
     replicas                  = 1
-    progress_deadline_seconds = 160
+    progress_deadline_seconds = 600
     selector {
       match_labels = {
         App = "taskmeui"
